@@ -19,7 +19,7 @@ void * failure(PyObject *type, const char *message) {
     return NULL;
 }
 
-static PyObject *numpy2mcpl_dump(PyObject *self, PyObject *args){
+static PyObject *save(PyObject *self, PyObject *args){
   char *filename;
   char line[512];
 
@@ -44,24 +44,24 @@ static PyObject *numpy2mcpl_dump(PyObject *self, PyObject *args){
   
   /*create the mcpl output structure*/
   outputfile = mcpl_create_outfile(filename);
-  snprintf(line,255,"%s %s","nump2mcpl","v0.01");
-  //mcpl_hdr_set_srcname(outputfile,line);
+  snprintf(line,255,"%s %s","np2mcpl","v0.01");
+  mcpl_hdr_set_srcname(outputfile,line);
   
   /*for now always assume double precision*/
   mcpl_enable_doubleprec(outputfile);
 
   /* check if dims match polaized or not */
   if (m==12) {
-    printf("It seems we have stored polarization\n");
+    printf("INFO: polarization enabled.\n");
     polarised=1;
     mcpl_enable_polarisation(outputfile);
   } else if (m==9){
-    printf("No polarization here\n");
+    printf("INFO: polarization disabled.\n");
     polarised=0;
 
   } else {
-    printf("This is not right - wrong number of columns in numpy array");
-    return failure(PyExc_RuntimeError, "wrong number of of columns");
+    printf("ERROR: wrong number of columns in numpy array");
+    return failure(PyExc_RuntimeError, "Wrong number of of columns: ({m}. Expected 9 or 12.");
   }
 
 
@@ -91,44 +91,42 @@ static PyObject *numpy2mcpl_dump(PyObject *self, PyObject *args){
   return PyLong_FromLong(sts);
 }
 
-
-
 static PyMethodDef mymethods[] = {
-    { "numpy2mcpl_dump", numpy2mcpl_dump,
+    { "save", save,
       METH_VARARGS,
-      "dump particle data in the form of a numpy array to mcpl"},
+      "Save particle data in the form of a numpy array to an mcpl-file."},
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
-static char numpy2mcpl_doc[] = "generate an mcpl-file from a numpy array";
+static char np2mcpl_doc[] = "Generate an mcpl-file from a numpy array";
 
 
-static struct PyModuleDef numpy2mcpl = {
+static struct PyModuleDef np2mcpl = {
   PyModuleDef_HEAD_INIT,
-  "nump2mcpl",
-  numpy2mcpl_doc,
+  "np2mcpl",
+  np2mcpl_doc,
   -1,
   mymethods
 };
 
-static PyObject *n2m_Error;
+static PyObject *np2mcpl_Error;
 
 PyMODINIT_FUNC
-PyInit_numpy2mcpl(void)
+PyInit_np2mcpl(void)
 {
   import_array();
   
   PyObject *m;
-  m=PyModule_Create(&numpy2mcpl);
+  m=PyModule_Create(&np2mcpl);
 
   if (m == NULL)
-        return NULL;
+    return NULL;
 
-  n2m_Error = PyErr_NewException("numpy2mcpl.error", NULL, NULL);
-  Py_XINCREF(n2m_Error);
-  if (PyModule_AddObject(m, "error", n2m_Error) < 0) {
-    Py_XDECREF(n2m_Error);
-    Py_CLEAR(n2m_Error);
+  np2mcpl_Error = PyErr_NewException("np2mcpl.error", NULL, NULL);
+  Py_XINCREF(np2mcpl_Error);
+  if (PyModule_AddObject(m, "error", np2mcpl_Error) < 0) {
+    Py_XDECREF(np2mcpl_Error);
+    Py_CLEAR(np2mcpl_Error);
     Py_DECREF(m);
     return NULL;
   }

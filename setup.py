@@ -1,6 +1,6 @@
 from distutils.core import setup, Extension
 
-module1 = Extension('numpy2mcpl',
+module1 = Extension('np2mcpl',
                     sources = ['numpy2mcplmodule.c'],
                     include_dirs =['/usr/lib/python3.10/site-packages/numpy/core/include',
                       '/usr/local/include'],
@@ -8,7 +8,7 @@ module1 = Extension('numpy2mcpl',
                     libraries = ['mcpl'])
 
 
-setup (name = 'numpy2mcpl',
+setup (name = 'np2mcpl',
        version = '1.0',
-       description = 'This is a demo package',
+       description = 'module for saving a numpy array to an mcpl-file.',
        ext_modules = [module1])
