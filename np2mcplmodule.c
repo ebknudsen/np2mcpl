@@ -38,7 +38,7 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
 
   int sts,i,nparticles,m;
   int dims[2];
-  int polarised;
+  int polarised,double_prec;
 
   if (!PyArg_ParseTuple(args, "sO!", &filename, &PyArray_Type, &particle_bank))
     return failure(PyExc_RuntimeError, "np2mcpl: Failed to parse parameters.");
@@ -57,8 +57,13 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
   snprintf(line,255,"%s %s","np2mcpl","v0.01");
   mcpl_hdr_set_srcname(outputfile,line);
   
-  /*for now always assume double precision*/
-  mcpl_enable_doubleprec(outputfile);
+  /*set precision flag*/
+  if (particle_bank->descr->type_num==NPY_DOUBLE){
+    mcpl_enable_doubleprec(outputfile);
+    double_prec=1;
+  } else {
+    double_prec=0;
+  }
 
   /* check if dims match polaized or not */
   if (m==13) {
