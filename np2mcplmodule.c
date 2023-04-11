@@ -19,7 +19,7 @@ void * failure(PyObject *type, const char *message) {
     return NULL;
 }
 
-static PyObject *save(PyObject *self, PyObject *args){
+static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
   char *filename;
   char line[512];
 
@@ -32,11 +32,9 @@ static PyObject *save(PyObject *self, PyObject *args){
   int polarised;
 
   if (!PyArg_ParseTuple(args, "sO!", &filename, &PyArray_Type, &particle_bank))
-    return failure(PyExc_RuntimeError, "Failed to parse parameters.");
-  /* Check that object input is 'double' type and a matrix
-     Not needed if python wrapper function checks before call to this routine.
-     Also, ideally should allow float*/
-  //if (not_doublematrix(particle_bank)) return NULL;
+    return failure(PyExc_RuntimeError, "np2mcpl: Failed to parse parameters.");
+  /* We should Check that object input is 'double' type and a matrix
+     Also, ideally should allow 'float'*/
 
   /* Get the dimensions of the input */
   nparticles=dims[0]=particle_bank->dimensions[0];
@@ -92,14 +90,13 @@ static PyObject *save(PyObject *self, PyObject *args){
 }
 
 static PyMethodDef mymethods[] = {
-    { "save", save,
+    { "save", np2mcpl_save,
       METH_VARARGS,
-      "Save particle data in the form of a numpy array to an mcpl-file."},
+      "Save particle data in the form of a numpy array to mcpl"},
     {NULL, NULL, 0, NULL} /* Sentinel */
 };
 
 static char np2mcpl_doc[] = "Generate an mcpl-file from a numpy array";
-
 
 static struct PyModuleDef np2mcpl = {
   PyModuleDef_HEAD_INIT,
