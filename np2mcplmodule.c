@@ -44,7 +44,7 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
     return failure(PyExc_RuntimeError, "np2mcpl: Failed to parse parameters.");
   /* We should Check that object input is 'double' type and a matrix
      Also, ideally should allow 'float'*/
-  if ( not_matrix(particle_bank) || not_floating_point(particle_bank) ){
+  if ( not_matrix(particle_bank) || not_floating_point_array(particle_bank) ){
     return NULL;
   }
 
