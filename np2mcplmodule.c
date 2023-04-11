@@ -2,6 +2,7 @@
 #include <Python.h>
 #include <numpy/arrayobject.h>
 
+#include <math.h>
 #include <mcpl.h>
 
 /*int not_doublematrix(PyArrayObject *mat) {*/
@@ -49,11 +50,11 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
   mcpl_enable_doubleprec(outputfile);
 
   /* check if dims match polaized or not */
-  if (m==12) {
+  if (m==13) {
     printf("INFO: polarization enabled.\n");
     polarised=1;
     mcpl_enable_polarisation(outputfile);
-  } else if (m==9){
+  } else if (m==10){
     printf("INFO: polarization disabled.\n");
     polarised=0;
 
@@ -66,20 +67,20 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
   /* loop over rows in the numpy array and drop everything to an mcpl-file*/
   for (i=0;i<nparticles;i++){
     mcpl_particle_t p;
-    p.pdgcode=2112;
-    p.position[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,0));
-    p.position[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,1));
-    p.position[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,2));
-    p.direction[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,3));
-    p.direction[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,4));
-    p.direction[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,5));
-    p.time=*( (double *) PyArray_GETPTR2(particle_bank,i,6));
-    p.ekin=*( (double *) PyArray_GETPTR2(particle_bank,i,7));
-    p.weight=*( (double *) PyArray_GETPTR2(particle_bank,i,8));
+    p.pdgcode=(int) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,0)) );
+    p.position[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,1));
+    p.position[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,2));
+    p.position[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,3));
+    p.direction[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,4));
+    p.direction[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,5));
+    p.direction[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,6));
+    p.time=*( (double *) PyArray_GETPTR2(particle_bank,i,7));
+    p.ekin=*( (double *) PyArray_GETPTR2(particle_bank,i,8));
+    p.weight=*( (double *) PyArray_GETPTR2(particle_bank,i,9));
     if(polarised){
-      p.polarisation[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,9));
-      p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,10));
-      p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,11));
+      p.polarisation[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,10));
+      p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,11));
+      p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,12));
     }
     /*write the particle*/
     mcpl_add_particle(outputfile,&p);
