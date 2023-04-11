@@ -5,15 +5,23 @@
 #include <math.h>
 #include <mcpl.h>
 
-/*int not_doublematrix(PyArrayObject *mat) {*/
-/*   if (mat->descr->type_num != NPY_DOUBLE || mat->nd != 2) {*/
-/*      PyErr_SetString(PyExc_ValueError,*/
-/*         "In not_doublematrix: array must be of type Float and 2 dimensional (n x m).");*/
-/*      return 1; }*/
-/*   return 0;*/
-/*}*/
+int not_matrix(PyArrayObject *mat) {
+  if (mat->nd != 2) {
+    PyErr_SetString(PyExc_ValueError,
+        "In not_matrix: array must be of type Float and 2 dimensional (n x m).");
+    return 1;
+  }
+  return 0;
+}
 
-
+int not_floating_point_array(PyArrayObject *mat) {
+  if (mat->descr->type_num != NPY_DOUBLE && mat->descr->type_num != NPY_FLOAT){
+    PyErr_SetString(PyExc_ValueError,
+        "In is_floating_point_array: must supply an array of floating points.");
+    return 1;
+  }
+  return 0;
+}
 
 void * failure(PyObject *type, const char *message) {
     PyErr_SetString(type, message);
@@ -36,6 +44,9 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
     return failure(PyExc_RuntimeError, "np2mcpl: Failed to parse parameters.");
   /* We should Check that object input is 'double' type and a matrix
      Also, ideally should allow 'float'*/
+  if ( not_matrix(particle_bank) || not_floating_point(particle_bank) ){
+    return NULL;
+  }
 
   /* Get the dimensions of the input */
   nparticles=dims[0]=particle_bank->dimensions[0];
@@ -62,7 +73,6 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
     printf("ERROR: wrong number of columns in numpy array");
     return failure(PyExc_RuntimeError, "Wrong number of of columns: ({m}. Expected 9 or 12.");
   }
-
 
   /* loop over rows in the numpy array and drop everything to an mcpl-file*/
   for (i=0;i<nparticles;i++){
