@@ -15,4 +15,4 @@ np2mcpl is a low-key tool to help write mcpl-files directly from numpy-arrays.
 PDG-code  x y z   ux uy uz   t e_kin weight    [ px py pz ]
 ```
  where the PDG-code denotes which kind of particle it is, e.g. 2112 for neutrons, 22 for photon, ... 
-- The vector ux,uy,uz must have unit length. The optional vector px,py,pz is the polarisation vector assciated with the Monte Carlo-particle.
+- The vector ux,uy,uz must have unit length. The optional vector px,py,pz is the polarisation vector associated with the Monte Carlo-particle.
