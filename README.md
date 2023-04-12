@@ -2,7 +2,7 @@
 
 np2mcpl is a low-key tool to help write mcpl-files directly from numpy-arrays.
 
-## build/install
+## Build/Install/Use
 1. Make sure you have installed the MCPL-library (and NumPy)
 2. Build the python/c module: ```python setup.py build```
 3. Add the build directory to PYTHONPATH _or_ run: ```python setup.py install```
