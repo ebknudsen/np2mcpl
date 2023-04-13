@@ -82,20 +82,38 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
   /* loop over rows in the numpy array and drop everything to an mcpl-file*/
   for (i=0;i<nparticles;i++){
     mcpl_particle_t p;
-    p.pdgcode=(int) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,0)) );
-    p.position[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,1));
-    p.position[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,2));
-    p.position[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,3));
-    p.direction[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,4));
-    p.direction[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,5));
-    p.direction[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,6));
-    p.time=*( (double *) PyArray_GETPTR2(particle_bank,i,7));
-    p.ekin=*( (double *) PyArray_GETPTR2(particle_bank,i,8));
-    p.weight=*( (double *) PyArray_GETPTR2(particle_bank,i,9));
-    if(polarised){
-      p.polarisation[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,10));
-      p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,11));
-      p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,12));
+    if(double_prec){
+      p.pdgcode=(int) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,0)) );
+      p.position[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,1));
+      p.position[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,2));
+      p.position[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,3));
+      p.direction[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,4));
+      p.direction[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,5));
+      p.direction[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,6));
+      p.time=*( (double *) PyArray_GETPTR2(particle_bank,i,7));
+      p.ekin=*( (double *) PyArray_GETPTR2(particle_bank,i,8));
+      p.weight=*( (double *) PyArray_GETPTR2(particle_bank,i,9));
+      if(polarised){
+        p.polarisation[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,10));
+        p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,11));
+        p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,12));
+      }
+    }else{
+      p.pdgcode=(int) rint( *( (float *) PyArray_GETPTR2(particle_bank,i,0)) );
+      p.position[0]=*( (float *) PyArray_GETPTR2(particle_bank,i,1));
+      p.position[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,2));
+      p.position[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,3));
+      p.direction[0]=*( (float *) PyArray_GETPTR2(particle_bank,i,4));
+      p.direction[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,5));
+      p.direction[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,6));
+      p.time=*( (float *) PyArray_GETPTR2(particle_bank,i,7));
+      p.ekin=*( (float *) PyArray_GETPTR2(particle_bank,i,8));
+      p.weight=*( (float *) PyArray_GETPTR2(particle_bank,i,9));
+      if(polarised){
+        p.polarisation[0]=*( (float *) PyArray_GETPTR2(particle_bank,i,10));
+        p.polarisation[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,11));
+        p.polarisation[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,12));
+      }
     }
     /*write the particle*/
     mcpl_add_particle(outputfile,&p);
