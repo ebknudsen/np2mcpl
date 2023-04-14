@@ -1,0 +1,22 @@
+[project]
+name="np2mcpl"
+version="0.0.1"
+authors = [
+  { name="Erik B Knudsen", email="erik.knudsen@copenhagenatomics.com" },
+]
+description = "Package to convert a Monte Carlo particle in the form of a numpy-array to a MCPL-file."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ebknudsen/np2mcpl"
+"Bug Tracker" = "https://github.com/ebknudsen/np2mcpl/issues"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
