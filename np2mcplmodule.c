@@ -5,15 +5,23 @@
 #include <math.h>
 #include <mcpl.h>
 
-/*int not_doublematrix(PyArrayObject *mat) {*/
-/*   if (mat->descr->type_num != NPY_DOUBLE || mat->nd != 2) {*/
-/*      PyErr_SetString(PyExc_ValueError,*/
-/*         "In not_doublematrix: array must be of type Float and 2 dimensional (n x m).");*/
-/*      return 1; }*/
-/*   return 0;*/
-/*}*/
+int not_matrix(PyArrayObject *mat) {
+  if (mat->nd != 2) {
+    PyErr_SetString(PyExc_ValueError,
+        "In not_matrix: array must be of type Float and 2 dimensional (n x m).");
+    return 1;
+  }
+  return 0;
+}
 
-
+int not_floating_point_array(PyArrayObject *mat) {
+  if (mat->descr->type_num != NPY_DOUBLE && mat->descr->type_num != NPY_FLOAT){
+    PyErr_SetString(PyExc_ValueError,
+        "In is_floating_point_array: must supply an array of floating points.");
+    return 1;
+  }
+  return 0;
+}
 
 void * failure(PyObject *type, const char *message) {
     PyErr_SetString(type, message);
@@ -30,12 +38,15 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
 
   int sts,i,nparticles,m;
   int dims[2];
-  int polarised;
+  int polarised,double_prec;
 
   if (!PyArg_ParseTuple(args, "sO!", &filename, &PyArray_Type, &particle_bank))
     return failure(PyExc_RuntimeError, "np2mcpl: Failed to parse parameters.");
   /* We should Check that object input is 'double' type and a matrix
      Also, ideally should allow 'float'*/
+  if ( not_matrix(particle_bank) || not_floating_point_array(particle_bank) ){
+    return NULL;
+  }
 
   /* Get the dimensions of the input */
   nparticles=dims[0]=particle_bank->dimensions[0];
@@ -46,8 +57,13 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
   snprintf(line,255,"%s %s","np2mcpl","v0.01");
   mcpl_hdr_set_srcname(outputfile,line);
   
-  /*for now always assume double precision*/
-  mcpl_enable_doubleprec(outputfile);
+  /*set precision flag*/
+  if (particle_bank->descr->type_num==NPY_DOUBLE){
+    mcpl_enable_doubleprec(outputfile);
+    double_prec=1;
+  } else {
+    double_prec=0;
+  }
 
   /* check if dims match polaized or not */
   if (m==13) {
@@ -63,24 +79,41 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
     return failure(PyExc_RuntimeError, "Wrong number of of columns: ({m}. Expected 9 or 12.");
   }
 
-
   /* loop over rows in the numpy array and drop everything to an mcpl-file*/
   for (i=0;i<nparticles;i++){
     mcpl_particle_t p;
-    p.pdgcode=(int) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,0)) );
-    p.position[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,1));
-    p.position[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,2));
-    p.position[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,3));
-    p.direction[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,4));
-    p.direction[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,5));
-    p.direction[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,6));
-    p.time=*( (double *) PyArray_GETPTR2(particle_bank,i,7));
-    p.ekin=*( (double *) PyArray_GETPTR2(particle_bank,i,8));
-    p.weight=*( (double *) PyArray_GETPTR2(particle_bank,i,9));
-    if(polarised){
-      p.polarisation[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,10));
-      p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,11));
-      p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,12));
+    if(double_prec){
+      p.pdgcode=(int) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,0)) );
+      p.position[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,1));
+      p.position[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,2));
+      p.position[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,3));
+      p.direction[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,4));
+      p.direction[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,5));
+      p.direction[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,6));
+      p.time=*( (double *) PyArray_GETPTR2(particle_bank,i,7));
+      p.ekin=*( (double *) PyArray_GETPTR2(particle_bank,i,8));
+      p.weight=*( (double *) PyArray_GETPTR2(particle_bank,i,9));
+      if(polarised){
+        p.polarisation[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,10));
+        p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,11));
+        p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,12));
+      }
+    }else{
+      p.pdgcode=(int) rint( *( (float *) PyArray_GETPTR2(particle_bank,i,0)) );
+      p.position[0]=*( (float *) PyArray_GETPTR2(particle_bank,i,1));
+      p.position[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,2));
+      p.position[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,3));
+      p.direction[0]=*( (float *) PyArray_GETPTR2(particle_bank,i,4));
+      p.direction[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,5));
+      p.direction[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,6));
+      p.time=*( (float *) PyArray_GETPTR2(particle_bank,i,7));
+      p.ekin=*( (float *) PyArray_GETPTR2(particle_bank,i,8));
+      p.weight=*( (float *) PyArray_GETPTR2(particle_bank,i,9));
+      if(polarised){
+        p.polarisation[0]=*( (float *) PyArray_GETPTR2(particle_bank,i,10));
+        p.polarisation[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,11));
+        p.polarisation[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,12));
+      }
     }
     /*write the particle*/
     mcpl_add_particle(outputfile,&p);
