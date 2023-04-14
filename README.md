@@ -1,4 +1,5 @@
 # np2mcpl
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 np2mcpl is a low-key tool to help write mcpl-files directly from numpy-arrays.
 
