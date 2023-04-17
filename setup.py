@@ -1,9 +1,9 @@
 from distutils.core import setup, Extension
+import numpy as np
 
 module1 = Extension('np2mcpl',
                     sources = ['np2mcplmodule.c'],
-                    include_dirs =['/usr/lib/python3.10/site-packages/numpy/core/include',
-                      '/usr/local/include'],
+                    include_dirs =[np.get_include(),'/usr/local/include'],
                     library_dirs = ['/usr/local/lib'],
                     libraries = ['mcpl'])
 
