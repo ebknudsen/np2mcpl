@@ -1,6 +1,6 @@
 name: Build
 
-on: [dispatch]
+on: [workflow_dispatch]
 
 jobs:
   build_wheels:
