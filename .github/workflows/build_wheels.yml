@@ -8,18 +8,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-20.04, windows-2019]
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: bootstrap
+    - name: bootstrap_ubuntu
+      if: ${{ matrix.os == 'ubuntu-20.04' }}
       run: sudo apt-get install -y curl
+
+    - name: bootstrap_windows
+      if: ${{ matrix.os == 'windows-2019' }}
+      run: choco install curl
+
+    - name: bootstrap_macos
+      if: ${{ matrix.os == 'macos-11' }}
+      run: echo hello
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.12.1
       env:
-        CIBW_BEFORE_ALL: "curl --output mcpl.tar.gz -L https://github.com/mctools/mcpl/tarball/master; tar -xvf mcpl.tar.gz --strip-components=1; cmake .; make; make install"
+        CIBW_BEFORE_ALL_LINUX: "curl --output mcpl.tar.gz -L https://github.com/mctools/mcpl/tarball/master; tar -xvf mcpl.tar.gz --strip-components=1; cmake .; make; make install"
+        CIBW_BEFORE_ALL_WINDOWS: 
       with:
         package-dir: .
         output-dir: wheelhouse
