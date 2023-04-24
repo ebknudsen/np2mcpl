@@ -1,0 +1,32 @@
+name: Build
+
+on: [workflow_dispatch]
+
+jobs:
+  build_wheels:
+    name: Build wheels on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, windows-2019, macos-11]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: bootstrap
+      run: sudo apt-get install -y curl
+
+    - name: Build wheels
+      uses: pypa/cibuildwheel@v2.12.1
+      env:
+        CIBW_BEFORE_ALL: "curl --output mcpl.tar.gz -L https://github.com/mctools/mcpl/tarball/master; tar -xvf mcpl.tar.gz --strip-components=1; cmake; make; make install"
+      with:
+        package-dir: .
+        output-dir: wheelhouse
+        config-file: "{package}/pyproject.toml"
+    - name: check produce
+      run: |
+        ls wheelhouse
+        #- uses: actions/upload-artifact@v3
+        #  with:
+        #    path: ./wheelhouse/*.whl
