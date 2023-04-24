@@ -2,6 +2,10 @@ name: Build
 
 on: [workflow_dispatch]
 
+env:
+    MCPL_VERSION=1.6.1
+
+
 jobs:
   build_wheels:
     name: Build wheels on ${{ matrix.os }}
@@ -32,12 +36,12 @@ jobs:
       env:
         CIBW_BEFORE_ALL_LINUX: "curl --output mcpl.tar.gz -L https://github.com/mctools/mcpl/tarball/master; tar -xvf mcpl.tar.gz --strip-components=1; cmake .; make; make install"
         CIBW_BEFORE_ALL_WINDOWS: >
-          curl --output mcpl.zip -L https://github.com/mctools/mcpl/archive/refs/tags/v1.6.1.zip &&
+          curl --output mcpl.zip -L https://github.com/mctools/mcpl/archive/refs/tags/v${{ env.MCPL_VERSION }}.zip &&
           unzip mcpl.zip &&
-          dir .
-#          cmake . &&
-#          make &&
-#          make install
+          cd mcpl-${{ env.MCPL_VERSION }} &&
+          cmake . &&
+          make &&
+          make install
       with:
         package-dir: .
         output-dir: wheelhouse
