@@ -3,7 +3,7 @@ name: Build
 on: [workflow_dispatch]
 
 env:
-    MCPL_VERSION=1.6.1
+    MCPL_VERSION: 1.6.1
 
 
 jobs:
