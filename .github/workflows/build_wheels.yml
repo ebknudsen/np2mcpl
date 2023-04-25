@@ -40,6 +40,7 @@ jobs:
           unzip mcpl.zip &&
           cd mcpl-${{ env.MCPL_VERSION }} &&
           cmake . &&
+          dir &&
           make &&
           make install
       with:
