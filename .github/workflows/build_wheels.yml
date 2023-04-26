@@ -43,7 +43,7 @@ jobs:
           curl --output mcpl.zip -L https://github.com/mctools/mcpl/archive/refs/tags/v${{ env.MCPL_VERSION }}.zip &&
           unzip mcpl.zip &&
           cd mcpl-${{ env.MCPL_VERSION }} &&
-          cmake . &&
+          cmake . -DMCPL_ENABLE_ZLIB=FETCH &&
           dir &&
           make &&
           make install
