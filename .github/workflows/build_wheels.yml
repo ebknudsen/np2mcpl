@@ -1,6 +1,10 @@
 name: Build
 
-on: [workflow_dispatch]
+on:
+    push:
+        branches: '!master'
+        branches: '!main'
+    workflow_dispatch:
 
 env:
     MCPL_VERSION: 1.6.1
