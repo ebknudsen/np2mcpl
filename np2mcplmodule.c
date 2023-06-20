@@ -38,7 +38,7 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
 
   int sts,i,nparticles,m;
   int dims[2];
-  int polarised,userflag,double_prec;
+  int polarised,userflags,double_prec;
 
   if (!PyArg_ParseTuple(args, "sO!", &filename, &PyArray_Type, &particle_bank))
     return failure(PyExc_RuntimeError, "np2mcpl: Failed to parse parameters.");
@@ -66,15 +66,15 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
   }
 
   polarised=0;
-  userflag=0;
+  userflags=0;
   /* check if dims match polarised and userflags or not */
   switch (m) {
     case 14:
       printf("INFO: polarization enabled.\n");
       polarised=1;
       mcpl_enable_polarisation(outputfile);
-      printf("INFO: integer userflag enabled.\n");
-      userflag=1;
+      printf("INFO: integer userflags enabled.\n");
+      userflags=1;
       mcpl_enable_userflags(outputfile);
       break;
     case 13:
@@ -84,15 +84,15 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
       break;
     case 11:
       printf("INFO: polarization disabled.\n");
-      printf("INFO: integer userflag enabled.\n");
-      userflag=1;
+      printf("INFO: integer userflags enabled.\n");
+      userflags=1;
       mcpl_enable_userflags(outputfile);
       break;
     case 10:
       printf("INFO: polarization disabled.\n");
       printf("INFO: integer userflag disabled.\n");
       break;
-    case default:
+    default:
       printf("ERROR: wrong number of columns in numpy array");
       return failure(PyExc_RuntimeError, "Wrong number of of columns: ({m}. Expected 10,11,13, or 14.");
   }
@@ -116,8 +116,8 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
         p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,11));
         p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,12));
       }
-      if(userflag){
-        p.userflag=(uint32_t) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,13)) );
+      if(userflags){
+        p.userflags=(uint32_t) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,13)) );
       }
     }else{
       p.pdgcode=(int) rint( *( (float *) PyArray_GETPTR2(particle_bank,i,0)) );
@@ -135,8 +135,8 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
         p.polarisation[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,11));
         p.polarisation[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,12));
       }
-      if(userflag){
-        p.userflag=(uint32_t) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,13)) );
+      if(userflags){
+        p.userflags=(uint32_t) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,13)) );
       }
     }
     /*write the particle*/
