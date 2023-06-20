@@ -1,6 +1,6 @@
 [project]
 name="np2mcpl"
-version="0.0.1"
+version="0.1.0"
 authors = [
   { name="Erik B Knudsen", email="erik.knudsen@copenhagenatomics.com" },
 ]
