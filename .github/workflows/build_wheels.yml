@@ -6,6 +6,9 @@ on:
             - '!master'
             - '!main'
     workflow_dispatch:
+    release:
+        types:
+            - published
 
 env:
     MCPL_VERSION: 1.6.1
