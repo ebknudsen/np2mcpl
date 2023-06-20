@@ -1,6 +1,15 @@
 name: Build
 
-on: [workflow_dispatch]
+on:
+    push:
+        branches:
+            - '!master'
+            - '!main'
+    workflow_dispatch:
+
+env:
+    MCPL_VERSION: 1.6.1
+
 
 jobs:
   build_wheels:
@@ -8,18 +17,37 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04, windows-2019, macos-11]
+        os: [ubuntu-20.04, windows-2019]
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: bootstrap
-      run: sudo apt-get install -y curl
+    - name: bootstrap_ubuntu
+      if: ${{ matrix.os == 'ubuntu-20.04' }}
+      run: |
+        sudo apt-get install -y curl
+    
+    - name: bootstrap_windows
+      if: ${{ matrix.os == 'windows-2019' }}
+      run: |
+        choco install curl xdelta3
+
+    - name: bootstrap_macos
+      if: ${{ matrix.os == 'macos-11' }}
+      run: echo hello
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.12.1
       env:
-        CIBW_BEFORE_ALL: "curl --output mcpl.tar.gz -L https://github.com/mctools/mcpl/tarball/master; tar -xvf mcpl.tar.gz --strip-components=1; cmake; make; make install"
+        CIBW_BEFORE_ALL_LINUX: "curl --output mcpl.tar.gz -L https://github.com/mctools/mcpl/tarball/master; tar -xvf mcpl.tar.gz --strip-components=1; cmake .; make; make install"
+        CIBW_BEFORE_ALL_WINDOWS: >
+          curl --output mcpl.zip -L https://github.com/mctools/mcpl/archive/refs/tags/v${{ env.MCPL_VERSION }}.zip &&
+          unzip mcpl.zip &&
+          cd mcpl-${{ env.MCPL_VERSION }} &&
+          cmake . -G "Unix Makefiles" -DMCPL_ENABLE_ZLIB=FETCH &&
+          dir &&
+          make &&
+          make install
       with:
         package-dir: .
         output-dir: wheelhouse
