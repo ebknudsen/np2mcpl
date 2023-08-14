@@ -40,7 +40,7 @@ jobs:
       run: echo hello
 
     - name: Build wheels
-      uses: pypa/cibuildwheel@v2.12.1
+      uses: pypa/cibuildwheel@v2.15.0
       env:
         CIBW_BEFORE_ALL_LINUX: "curl --output mcpl.tar.gz -L https://github.com/mctools/mcpl/tarball/master; tar -xvf mcpl.tar.gz --strip-components=1; cmake .; make; make install"
         CIBW_BEFORE_ALL_WINDOWS: >
