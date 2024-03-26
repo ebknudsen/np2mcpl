@@ -111,13 +111,14 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
       p.time=*( (double *) PyArray_GETPTR2(particle_bank,i,7));
       p.ekin=*( (double *) PyArray_GETPTR2(particle_bank,i,8));
       p.weight=*( (double *) PyArray_GETPTR2(particle_bank,i,9));
+      int col=10;
       if(polarised){
-        p.polarisation[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,10));
-        p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,11));
-        p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,12));
+        p.polarisation[0]=*( (double *) PyArray_GETPTR2(particle_bank,i,col++));
+        p.polarisation[1]=*( (double *) PyArray_GETPTR2(particle_bank,i,col++));
+        p.polarisation[2]=*( (double *) PyArray_GETPTR2(particle_bank,i,col++));
       }
       if(userflags){
-        p.userflags=(uint32_t) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,13)) );
+        p.userflags=(uint32_t) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,col++)) );
       }
     }else{
       p.pdgcode=(int) rint( *( (float *) PyArray_GETPTR2(particle_bank,i,0)) );
@@ -130,13 +131,14 @@ static PyObject *np2mcpl_save(PyObject *self, PyObject *args){
       p.time=*( (float *) PyArray_GETPTR2(particle_bank,i,7));
       p.ekin=*( (float *) PyArray_GETPTR2(particle_bank,i,8));
       p.weight=*( (float *) PyArray_GETPTR2(particle_bank,i,9));
+      int col=10;
       if(polarised){
-        p.polarisation[0]=*( (float *) PyArray_GETPTR2(particle_bank,i,10));
-        p.polarisation[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,11));
-        p.polarisation[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,12));
+        p.polarisation[0]=*( (float *) PyArray_GETPTR2(particle_bank,i,col++));
+        p.polarisation[1]=*( (float *) PyArray_GETPTR2(particle_bank,i,col++));
+        p.polarisation[2]=*( (float *) PyArray_GETPTR2(particle_bank,i,col++));
       }
       if(userflags){
-        p.userflags=(uint32_t) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,13)) );
+        p.userflags=(uint32_t) rint( *( (double *) PyArray_GETPTR2(particle_bank,i,col++)) );
       }
     }
     /*write the particle*/
